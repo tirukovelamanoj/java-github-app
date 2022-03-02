@@ -14,12 +14,12 @@ public class JavaWebAppTest {
 
     @Test
     public void squareOfNumber(){
-        assertEquals(new JavaWebApp().squareOfNumber(2), 4);
+        assertEquals(4, new JavaWebApp().squareOfNumber(2));
     }
 
     @Test
     public void cubeOfNumber(){
-        assertEquals(new JavaWebApp().cubeOfNumber(2), 8);
+        assertEquals(8, new JavaWebApp().cubeOfNumber(2));
     }
 
     @AfterEach

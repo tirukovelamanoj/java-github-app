@@ -1,4 +1,4 @@
-name: Building Java Project using GitHub CICD
+name: Main CI
 on:
   pull_request:
     branches:
@@ -22,9 +22,36 @@ jobs:
       - name: test with maven
         run: mvn clean test --file jwa/pom.xml
 
+      - name: Upload code coverage as artifact
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        uses: actions/upload-artifact@v2
+        with:
+          name: code coverage
+          path: jwa/target/site/jacoco
+
+      - name: Create a release
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: build project
-        if: ${{ github.event_name == 'push' }}
-        run: mvn package --file jwa/pom.xml
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: mvn clean install --file jwa/pom.xml
+
+      - name: Heroku login
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku login
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: deploy WAR file
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku deploy:war --war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Heroku logout
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku logout
 
       - name: Create Github issue on failure
         if: failure()

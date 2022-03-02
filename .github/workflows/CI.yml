@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: code coverage
-          path: target/site/jacoco
+          path: jwa/target/site/jacoco
 
       - name: Create a release
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
@@ -38,6 +38,20 @@ jobs:
       - name: build project
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: mvn clean install --file jwa/pom.xml
+
+      - name: Heroku login
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku login
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: deploy WAR file
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku deploy:war --war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Heroku logout
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku logout
 
       - name: Create Github issue on failure
         if: failure()

@@ -31,4 +31,4 @@ jobs:
         uses: ManojCSE17/open-issue@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Build failed on ${{github.event_name}} to the ${{ GITHUB_REF_NAME }} "
+          title: "Build failed on ${{github.event_name}} to the ${{ github.GITHUB_REF_NAME }} "

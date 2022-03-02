@@ -1,4 +1,4 @@
-name: Building Java Project using GitHub CICD
+name: Main CI
 on:
   pull_request:
     branches:
@@ -22,8 +22,21 @@ jobs:
       - name: test with maven
         run: mvn clean test --file jwa/pom.xml
 
+      - name: Upload code coverage as artifact
+        if: success() && github.event_name == "push" && github.ref_name == "master"
+        uses: actions/upload-artifact@v2
+        with:
+          name: code coverage
+          path: target/site/jacoco
+
+      - name: Create a release
+        if: success() && github.event_name == "push" && github.ref_name == "master"
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: build project
-        if: ${{ github.event_name == 'push' }}
+        if: success() && github.event_name == "push" && github.ref_name == "master"
         run: mvn package --file jwa/pom.xml
 
       - name: Create Github issue on failure

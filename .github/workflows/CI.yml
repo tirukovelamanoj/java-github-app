@@ -29,12 +29,6 @@ jobs:
           name: code coverage
           path: jwa/target/site/jacoco
 
-      - name: Create a release
-        if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: build project
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: mvn clean install --file jwa/pom.xml

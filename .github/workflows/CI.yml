@@ -37,7 +37,7 @@ jobs:
 
       - name: build project
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: mvn package --file jwa/pom.xml
+        run: mvn clean install --file jwa/pom.xml
 
       - name: Create Github issue on failure
         if: failure()

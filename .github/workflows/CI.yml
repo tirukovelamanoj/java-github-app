@@ -23,7 +23,7 @@ jobs:
         run: mvn clean test --file jwa/pom.xml
 
       - name: Upload code coverage as artifact
-        if: success() && github.event_name == "push" && github.ref_name == "master"
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
         uses: actions/upload-artifact@v2
         with:
           name: code coverage

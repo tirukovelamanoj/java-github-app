@@ -1,5 +1,10 @@
+<%@ page language="java" import="com.example.web.App.*" %>
+
+<!DOCTYPE html>
 <html>
-<body>
-<h2>Hello World!</h2>
-</body>
+	<body>
+		
+        <%@ include  file="page.html" %>
+		
+	</body>
 </html>

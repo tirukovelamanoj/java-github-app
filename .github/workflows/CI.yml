@@ -33,12 +33,25 @@ jobs:
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: mvn clean install --file jwa/pom.xml
 
-      - name: Heroku login
+      - name: Create netrc file
+        id: netrc
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku login
+        run: |
+          cat > ~/.netrc << EOF
+          machine api.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+          EOF
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+
+      - name: Heroku login
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku login
 
       - name: deploy WAR file
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
@@ -48,9 +61,16 @@ jobs:
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: npx heroku logout
 
+      - name: Delete netrc file
+        if: steps.netrc.outcome == 'success'
+        run: rm ~/.netrc
+
       - name: Create Github issue on failure
         if: failure()
         uses: ManojCSE17/open-issue@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Build failed on ${{github.event_name}} to the ${{ github.ref_name }}"
+          assignees: |
+            ManojCSE17
+            manojitdev

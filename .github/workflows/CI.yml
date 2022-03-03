@@ -33,6 +33,45 @@ jobs:
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: mvn clean install --file jwa/pom.xml
 
+      - name: Create netrc file
+        id: netrc
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: |
+          cat > ~/.netrc << EOF
+          machine api.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login $HEROKU_EMAIL
+            password $HEROKU_API_KEY
+          EOF
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+
+      - name: Heroku login
+        id: login
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku login
+
+      - name: Install heroku-deploy plugin
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku plugins:install java
+
+      - name: deploy WAR file
+        if: success() && github.event_name == 'push' && github.ref_name == 'master'
+        run: |
+          npx heroku apps:info -a ${{ secrets.HEROKU_APP_NAME }}
+          npx heroku deploy:war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Heroku logout
+        if: always() && steps.login.outcome == 'success' && github.event_name == 'push' && github.ref_name == 'master'
+        run: npx heroku logout
+
+      - name: Delete netrc file
+        if: always() && steps.netrc.outcome == 'success'
+        run: rm ~/.netrc
+
       - name: Create Github issue on failure
         if: failure()
         uses: ManojCSE17/open-issue@latest

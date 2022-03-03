@@ -63,7 +63,8 @@ jobs:
         run: |
           npx heroku apps:info -a
           npx heroku deploy:war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        env:
+          HEROKU_DEBUG: 1
 
       - name: Heroku logout
         if: always() && steps.login.outcome == 'success' && github.event_name == 'push' && github.ref_name == 'master'

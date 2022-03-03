@@ -56,11 +56,11 @@ jobs:
 
       - name: Install heroku-deploy plugin
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku plugins:install heroku-cli-deploy
+        run: npx heroku plugins:install java
 
       - name: deploy WAR file
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku deploy:war --war jwa/target/jwa.war --app $HEROKU_APP_NAME
+        run: npx heroku deploy:war jwa/target/jwa.war --app $HEROKU_APP_NAME
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}

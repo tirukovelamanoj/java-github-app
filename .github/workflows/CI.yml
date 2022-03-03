@@ -61,7 +61,6 @@ jobs:
       - name: deploy WAR file
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: |
-          npx heroku apps:info -a ${{ secrets.HEROKU_APP_NAME }}
           npx heroku deploy:war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
 
       - name: Heroku logout

@@ -52,23 +52,23 @@ jobs:
       - name: Heroku login
         id: login
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku login
+        run: heroku login
 
       - name: Install heroku-deploy plugin
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku plugins:install java
+        run: heroku plugins:install java
 
       - name: deploy WAR file
         if: success() && github.event_name == 'push' && github.ref_name == 'master'
         run: |
-          npx heroku apps:info -a
-          npx heroku deploy:war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku apps:info -a
+          heroku deploy:war jwa/target/jwa.war --app ${{ secrets.HEROKU_APP_NAME }}
         env:
           HEROKU_DEBUG: 1
 
       - name: Heroku logout
         if: always() && steps.login.outcome == 'success' && github.event_name == 'push' && github.ref_name == 'master'
-        run: npx heroku logout
+        run: heroku logout
 
       - name: Delete netrc file
         if: always() && steps.netrc.outcome == 'success'

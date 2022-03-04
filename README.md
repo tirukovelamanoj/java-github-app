@@ -16,7 +16,7 @@ HTML
 <b>clean</b><br/>
 
 ```cmd
- mvn clean -f "jwa/pom.xml"
+mvn clean -f "jwa/pom.xml"
 ```
 
 <b>compile</b><br>
@@ -44,7 +44,7 @@ mvn install -f "jwa/pom.xml"
 
 <br>
 
-## Deployed to Heroku
+## Deployment (Heroku)
 ### Secrets to configure for deployment
 <br>
 
